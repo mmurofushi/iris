@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>アイリス 会話アンケート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F5F8;
+  --surface: #FFFFFF;
+  --ink: #1E2838;
+  --sub: #5C6778;
+  --line: #DCE1E8;
+  --ai: #2B4C7E;       /* 藍：主要操作 */
+  --ai-weak: #E3EAF4;
+  --ok: #357650;       /* 回答済み */
+  --ok-weak: #E2F0E7;
+  --part: #9C6E14;     /* 一部 */
+  --part-weak: #F6EDD9;
+  --none: #8A93A3;     /* 未回答 */
+  --risk: #B03A2E;
+  --risk-weak: #F8E3E0;
+  --rec: #C8362B;
+  --font: "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12171F; --surface: #1B222D; --ink: #E7EBF1; --sub: #A3ADBC; --line: #2C3644;
+    --ai: #8FB0E3; --ai-weak: #23314A; --ok: #7CC49A; --ok-weak: #1E3329;
+    --part: #E0B866; --part-weak: #3A2F1A; --none: #7D8798; --risk: #F08A7E; --risk-weak: #3D2220;
+    --rec: #F0695E; color-scheme: dark;
+  }
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--ai); outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; padding: 12px 14px 120px; }
+.hidden { display: none !important; }
+
+/* 見出し */
+.top { display: flex; align-items: center; gap: 10px; padding: 6px 0 12px; }
+.who { flex: 1; min-width: 0; }
+.who h1 { margin: 0; font-size: 1.25rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who .pid { color: var(--sub); font-size: .85rem; }
+.month { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 8px; font-weight: 700; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 40px; height: 40px; font-size: 1.1rem; }
+.notice { background: var(--part-weak); color: var(--ink); border-radius: 8px; padding: 8px 12px; font-size: .9rem; margin-bottom: 10px; }
+
+/* 録音パネル */
+.rec { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; margin-bottom: 12px; }
+.consent input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.rec-main { width: 100%; border: none; border-radius: 12px; padding: 18px; font-size: 1.15rem; font-weight: 700; background: var(--ai); color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.rec-main:disabled { opacity: .45; }
+.rec-main.on { background: var(--rec); }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+.rec-main.on .dot { animation: blink 1.2s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.rec-info { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; }
+.clock { font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.next { color: var(--sub); font-size: .85rem; text-align: right; }
+.force { width: 100%; margin-top: 12px; border: 2px solid var(--ai); background: var(--ai-weak); color: var(--ai); border-radius: 10px; padding: 12px; font-weight: 700; }
+.force:disabled { opacity: .4; }
+.status { margin-top: 10px; font-size: .88rem; color: var(--sub); min-height: 1.4em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status.err { color: var(--risk); }
+.status button { border: 1px solid currentColor; background: none; border-radius: 6px; padding: 2px 10px; color: inherit; }
+
+/* 進み具合 */
+.progress { margin: 18px 2px 8px; }
+.progress-head { display: flex; justify-content: space-between; align-items: baseline; }
+.progress-head strong { font-size: 1.05rem; }
+.progress-head span { color: var(--sub); font-size: .85rem; }
+.strip { display: flex; gap: 4px; margin-top: 8px; }
+.strip i { flex: 1; height: 10px; border-radius: 3px; background: var(--line); transition: background .3s; }
+.strip i.answered { background: var(--ok); }
+.strip i.partial { background: var(--part); }
+.filter { display: flex; gap: 8px; align-items: center; margin: 12px 2px 6px; font-size: .9rem; color: var(--sub); }
+.filter input { width: 20px; height: 20px; }
+
+.risk-banner { background: var(--risk-weak); color: var(--risk); border-radius: 10px; padding: 10px 12px; font-weight: 700; margin: 10px 0; font-size: .92rem; }
+
+/* 項目 */
+.items { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--none); border-radius: 10px; padding: 12px 14px; }
+.item.answered { border-left-color: var(--ok); }
+.item.partial { border-left-color: var(--part); }
+.item.flash { animation: flash 1.4s ease-out; }
+@keyframes flash { from { background: var(--ai-weak); } to { background: var(--surface); } }
+.item-head { display: flex; align-items: center; gap: 8px; }
+.item-head h2 { margin: 0; font-size: 1rem; flex: 1; }
+.chip { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--line); color: var(--sub); white-space: nowrap; }
+.answered .chip { background: var(--ok-weak); color: var(--ok); }
+.partial .chip { background: var(--part-weak); color: var(--part); }
+.ask { margin: 8px 0 0; padding: 8px 10px; background: var(--ai-weak); border-radius: 8px; font-size: .95rem; }
+.ask small { display: block; color: var(--sub); font-size: .75rem; }
+.answered .ask { display: none; }
+textarea.ans { width: 100%; margin-top: 8px; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 8px 10px; resize: vertical; min-height: 3.2em; }
+.evidence { color: var(--sub); font-size: .8rem; margin-top: 4px; }
+.item-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: .82rem; color: var(--sub); }
+.item-foot label { display: flex; gap: 6px; align-items: center; }
+.item-foot input { width: 18px; height: 18px; }
+.item.has-risk .item-foot label { color: var(--risk); font-weight: 700; }
+
+/* 送信 */
+.send-area { margin-top: 18px; }
+.send-area label { font-size: .9rem; color: var(--sub); }
+.send-area textarea { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 10px; min-height: 4em; margin-top: 4px; }
+.submit { width: 100%; margin-top: 12px; border: none; border-radius: 12px; padding: 16px; font-size: 1.05rem; font-weight: 700; background: var(--ok); color: #fff; }
+.submit:disabled { opacity: .4; }
+.hint { font-size: .85rem; color: var(--sub); margin-top: 6px; text-align: center; }
+
+/* 画面（設定・ID入力・完了） */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 20px; }
+.panel h2 { margin: 0 0 12px; font-size: 1.15rem; }
+.panel p { margin: 0 0 12px; color: var(--sub); font-size: .92rem; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: .9rem; margin-bottom: 4px; }
+.field input { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px; }
+.primary { width: 100%; border: none; border-radius: 10px; padding: 14px; font-weight: 700; background: var(--ai); color: #fff; }
+.demo { background: var(--ai-weak); color: var(--ai); border-radius: 8px; padding: 6px 12px; font-size: .85rem; margin-bottom: 10px; }
+.done-mark { font-size: 2.4rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="demoBanner" class="demo hidden">デモモード：AIの解析は行わず、見本の回答が入ります。</div>
+
+  <!-- 設定 -->
+  <section id="viewSettings" class="panel hidden">
+    <h2>はじめての設定</h2>
+    <p>この端末に保存されます。次回からは入力不要です。</p>
+    <div class="field"><label for="setName">施術家名</label><input id="setName" autocomplete="name"></div>
+    <div class="field"><label for="setCode">アクセスコード（管理者から共有）</label><input id="setCode" type="password" autocomplete="off"></div>
+    <button class="primary" id="saveSettings">保存する</button>
+  </section>
+
+  <!-- ID入力 -->
+  <section id="viewPid" class="panel hidden">
+    <h2>患者IDを入力</h2>
+    <p>通常はQRコードを読み取るだけで開きます。読めないときはIDを入力してください。</p>
+    <div class="field"><label for="pidInput">患者ID</label><input id="pidInput" inputmode="latin" autocapitalize="characters" placeholder="例：P0001"></div>
+    <button class="primary" id="pidGo">開く</button>
+  </section>
+
+  <!-- 読み込み中 -->
+  <section id="viewLoading" class="panel hidden"><p id="loadingText">患者情報を読み込んでいます…</p></section>
+
+  <!-- メイン -->
+  <main id="viewMain" class="hidden">
+    <div class="top">
+      <div class="who"><h1 id="pName"></h1><div class="pid" id="pId"></div></div>
+      <select id="monthSel" class="month" aria-label="アンケートの時期"></select>
+      <button class="icon-btn" id="openSettings" aria-label="設定">⚙</button>
+    </div>
+    <div id="notTarget" class="notice hidden"></div>
+
+    <section class="rec" aria-label="録音">
+      <label class="consent" id="consentRow"><input type="checkbox" id="consent"><span>ご本人（必要に応じてご家族）に、会話を記録に使うことの同意をいただいている</span></label>
+      <button class="rec-main" id="recBtn" disabled><span class="dot"></span><span id="recLabel">録音を開始</span></button>
+      <div class="rec-info">
+        <div class="clock" id="clock">0:00</div>
+        <div class="next" id="nextText">録音すると5分ごとに自動で読み込みます</div>
+      </div>
+      <button class="force" id="forceBtn" disabled>今すぐ読み込む</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="progress">
+      <div class="progress-head"><strong id="progText">0 / 0 項目</strong><span id="progSub"></span></div>
+      <div class="strip" id="strip"></div>
+    </div>
+    <div id="riskBanner" class="risk-banner hidden"></div>
+    <label class="filter"><input type="checkbox" id="onlyOpen">未回答と一部だけ表示</label>
+    <div class="items" id="items"></div>
+
+    <div class="send-area">
+      <label for="notes">備考（任意）</label>
+      <textarea id="notes" placeholder="気になったこと、申し送りなど"></textarea>
+      <button class="submit" id="submitBtn" disabled>記録を送信</button>
+      <div class="hint" id="submitHint"></div>
+    </div>
+  </main>
+
+  <!-- 完了 -->
+  <section id="viewDone" class="panel hidden">
+    <div class="done-mark">✓</div>
+    <h2>記録を送信しました</h2>
+    <p id="doneText"></p>
+    <p>音声は端末にもサーバーにも残っていません。</p>
+  </section>
+</div>
+
+<script>
+/* ===== 設定 ===== */
+const CONFIG = {
+  API_URL: '',            // Apps ScriptのウェブアプリURLを貼る。空のままだとデモモード
+  CHUNK_SECONDS: 300,     // 自動読み込みの間隔（秒）
+  MIN_CHUNK_SECONDS: 5,   // これより短い音声は読み込まない
+  SAMPLE_RATE: 12000      // 音声の品質。8000にすると通信量が約3分の2に減る
+};
+const DEMO = !CONFIG.API_URL;
+
+/* ===== 端末保存（失敗しても動くように） ===== */
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+/* ===== 状態 ===== */
+const S = {
+  settings: store.get('iris.settings') || { name: '', code: '' },
+  pid: '', patient: null, allItems: [], targetMonths: [], month: 0,
+  answers: {}, consent: false,
+  rec: null, recording: false, startedAt: 0, chunkStartedAt: 0, tick: null,
+  queue: [], busy: false, wakeLock: null, lastError: ''
+};
+const $ = id => document.getElementById(id);
+const show = (id) => ['viewSettings','viewPid','viewLoading','viewMain','viewDone'].forEach(v => $(v).classList.toggle('hidden', v !== id));
+const draftKey = () => 'iris.draft.' + S.pid + '.' + new Date().toISOString().slice(0, 10);
+
+/* ===== API ===== */
+async function api(action, payload) {
+  if (DEMO) return demoApi(action, payload);
+  const res = await fetch(CONFIG.API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, accessCode: S.settings.code, ...payload })
+  });
+  if (!res.ok) throw new Error('通信エラー（' + res.status + '）');
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || '不明なエラー');
+  return data;
+}
+
+/* ===== 起動 ===== */
+function boot() {
+  $('demoBanner').classList.toggle('hidden', !DEMO);
+  S.pid = (new URLSearchParams(location.search).get('pid') || '').trim();
+  if (!S.settings.name || (!DEMO && !S.settings.code)) return openSettings();
+  if (!S.pid) return show('viewPid');
+  loadPatient();
+}
+function openSettings() {
+  $('setName').value = S.settings.name; $('setCode').value = S.settings.code;
+  show('viewSettings');
+}
+$('saveSettings').onclick = () => {
+  const name = $('setName').value.trim(), code = $('setCode').value.trim();
+  if (!name || (!DEMO && !code)) { alert('施術家名とアクセスコードを入力してください。'); return; }
+  S.settings = { name, code }; store.set('iris.settings', S.settings);
+  if (S.patient) { show('viewMain'); return; }
+  S.pid ? loadPatient() : show('viewPid');
+};
+$('openSettings').onclick = () => { if (S.recording) { alert('録音中は設定を開けません。'); return; } openSettings(); };
+$('pidGo').onclick = () => {
+  const v = $('pidInput').value.trim().toUpperCase();
+  if (!v) return;
+  S.pid = v; history.replaceState(null, '', '?pid=' + encodeURIComponent(v));
+  loadPatient();
+};
+
+async function loadPatient() {
+  show('viewLoading'); $('loadingText').textContent = '患者情報を読み込んでいます…';
+  try {
+    const d = await api('init', { patientId: S.pid });
+    S.patient = d.patient; S.allItems = d.items; S.targetMonths = d.targetMonths;
+    const draft = store.get(draftKey());
+    S.month = draft && draft.month ? draft.month : (d.isTarget ? d.patient.month : d.targetMonths[0]);
+    S.answers = draft && draft.answers ? draft.answers : {};
+    S.consent = !!(draft && draft.consent);
+    if (draft && draft.notes) $('notes').value = draft.notes;
+    setupMain(d.isTarget);
+    show('viewMain');
+  } catch (e) {
+    $('loadingText').textContent = e.message;
+  }
+}
+
+function setupMain(isTarget) {
+  $('pName').textContent = S.patient.name + ' さん';
+  $('pId').textContent = 'ID ' + S.patient.id + '・開始から' + S.patient.month + 'か月目';
+  const months = [...new Set([...S.targetMonths, S.patient.month])].filter(m => m > 0).sort((a, b) => a - b);
+  $('monthSel').innerHTML = months.map(m => `<option value="${m}">${m}か月目</option>`).join('');
+  $('monthSel').value = S.month;
+  const nt = $('notTarget');
+  if (!isTarget) { nt.textContent = `いまは${S.patient.month}か月目で、アンケートの対象時期ではありません。必要なら右上で時期を選んでください。`; nt.classList.remove('hidden'); }
+  else nt.classList.add('hidden');
+  $('consent').checked = S.consent;
+  renderItems(); updateControls();
+}
+$('monthSel').onchange = e => { S.month = parseInt(e.target.value, 10); saveDraft(); renderItems(); };
+$('consent').onchange = e => { S.consent = e.target.checked; saveDraft(); updateControls(); };
+$('onlyOpen').onchange = () => applyFilter();
+$('notes').oninput = () => saveDraft();
+
+function currentItems() { return S.allItems.filter(i => i.months.indexOf(S.month) >= 0); }
+function saveDraft() { store.set(draftKey(), { month: S.month, answers: S.answers, consent: S.consent, notes: $('notes').value }); }
+
+/* ===== 項目の表示 ===== */
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const statusOf = id => (S.answers[id] && S.answers[id].status) || 'none';
+const LABEL = { none: '未回答', partial: '一部', answered: '回答済み' };
+
+function renderItems() {
+  $('items').innerHTML = currentItems().map(it => `
+    <article class="item" id="item-${esc(it.id)}" data-id="${esc(it.id)}">
+      <div class="item-head"><h2>${esc(it.name)}</h2><span class="chip"></span></div>
+      <p class="ask"><small>聞き方の例</small>${esc(it.prompt)}</p>
+      <textarea class="ans" rows="2" placeholder="聞き取った内容（自動で入ります。直接書き足しても構いません）"></textarea>
+      <div class="evidence"></div>
+      <div class="item-foot"><label><input type="checkbox" class="riskchk">休止リスクのサイン</label><span class="src"></span></div>
+    </article>`).join('');
+  document.querySelectorAll('.item').forEach(card => {
+    const id = card.dataset.id;
+    card.querySelector('.ans').addEventListener('input', e => {
+      const prev = S.answers[id] || {};
+      const v = e.target.value;
+      S.answers[id] = { ...prev, answer: v, status: v.trim() ? 'answered' : 'none', manual: true };
+      saveDraft(); paintCard(id, false); paintProgress();
+    });
+    card.querySelector('.riskchk').addEventListener('change', e => {
+      const prev = S.answers[id] || { status: 'none', answer: '' };
+      S.answers[id] = { ...prev, risk: e.target.checked, riskReason: e.target.checked ? (prev.riskReason || '施術家が判断') : '' };
+      saveDraft(); paintCard(id, false); paintProgress();
+    });
+    paintCard(id, true);
+  });
+  paintProgress(); applyFilter();
+}
+
+function paintCard(id, setText, flash) {
+  const card = $('item-' + id); if (!card) return;
+  const a = S.answers[id] || {};
+  const st = statusOf(id);
+  card.classList.remove('answered', 'partial'); if (st !== 'none') card.classList.add(st);
+  card.classList.toggle('has-risk', !!a.risk);
+  card.querySelector('.chip').textContent = LABEL[st];
+  const ta = card.querySelector('.ans');
+  if (setText && document.activeElement !== ta) ta.value = a.answer || '';
+  card.querySelector('.evidence').textContent = a.evidence ? '根拠：' + a.evidence : '';
+  card.querySelector('.riskchk').checked = !!a.risk;
+  card.querySelector('.src').textContent = a.manual ? '手入力あり' : (a.answer ? 'AIが記入' : '');
+  if (flash) { card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); }
+}
+
+function paintProgress() {
+  const items = currentItems();
+  const sts = items.map(i => statusOf(i.id));
+  const done = sts.filter(s => s === 'answered').length, part = sts.filter(s => s === 'partial').length;
+  $('progText').textContent = `${done} / ${items.length} 項目`;
+  $('progSub').textContent = part ? `一部 ${part}件・未回答 ${items.length - done - part}件` : `未回答 ${items.length - done}件`;
+  $('strip').innerHTML = sts.map(s => `<i class="${s === 'none' ? '' : s}"></i>`).join('');
+  const risks = items.filter(i => S.answers[i.id] && S.answers[i.id].risk);
+  const rb = $('riskBanner');
+  if (risks.length) { rb.textContent = '休止リスクのサイン：' + risks.map(i => i.name).join('、') + '（送信すると管理者に通知されます）'; rb.classList.remove('hidden'); }
+  else rb.classList.add('hidden');
+  updateControls();
+}
+
+function applyFilter() {
+  const only = $('onlyOpen').checked;
+  document.querySelectorAll('.item').forEach(c => c.classList.toggle('hidden', only && statusOf(c.dataset.id) === 'answered'));
+}
+
+/* ===== AIの結果を反映 ===== */
+function mergeUpdates(updates) {
+  let n = 0;
+  (updates || []).forEach(u => {
+    const prev = S.answers[u.id] || {};
+    const risk = !!prev.risk || !!u.risk;
+    const riskReason = u.riskReason || prev.riskReason || '';
+    if (prev.manual) { S.answers[u.id] = { ...prev, risk, riskReason }; paintCard(u.id, false, true); n++; return; }
+    const status = prev.status === 'answered' && u.status === 'partial' ? 'answered' : u.status;
+    S.answers[u.id] = { status, answer: u.answer, evidence: u.evidence || '', risk, riskReason, manual: false };
+    paintCard(u.id, true, true); n++;
+  });
+  saveDraft(); paintProgress(); applyFilter();
+  return n;
+}
+
+/* ===== 録音 ===== */
+$('recBtn').onclick = () => S.recording ? stopRec() : startRec();
+$('forceBtn').onclick = () => { if (S.recording) cutChunk(true); else processQueue(); };
+
+async function startRec() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    await ctx.resume();
+    const rate = Math.min(CONFIG.SAMPLE_RATE, ctx.sampleRate);
+    const src = ctx.createMediaStreamSource(stream);
+    const proc = ctx.createScriptProcessor(4096, 1, 1);
+    const mute = ctx.createGain(); mute.gain.value = 0;
+    S.rec = { stream, ctx, src, proc, mute, rate, parts: [], samples: 0 };
+    proc.onaudioprocess = e => {
+      if (!S.recording) return;
+      const out = downsample(e.inputBuffer.getChannelData(0), ctx.sampleRate, rate);
+      S.rec.parts.push(out); S.rec.samples += out.length;
+    };
+    src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+    S.recording = true; S.startedAt = S.chunkStartedAt = Date.now();
+    S.tick = setInterval(onTick, 1000);
+    keepAwake();
+    setStatus('録音中です。スマホは画面をつけたまま、近くに置いてください。');
+    updateControls(); onTick();
+  } catch (e) {
+    setStatus('マイクを使えません。iPhoneの「設定 > Safari > マイク」で許可してください。（' + e.message + '）', true);
+  }
+}
+
+function stopRec() {
+  cutChunk(false, 2);
+  S.recording = false;
+  clearInterval(S.tick);
+  try { S.rec.proc.disconnect(); S.rec.src.disconnect(); S.rec.stream.getTracks().forEach(t => t.stop()); S.rec.ctx.close(); } catch (e) {}
+  S.rec = null;
+  releaseAwake();
+  $('nextText').textContent = '録音を終了しました';
+  updateControls();
+  if (!S.queue.length && !S.busy) setStatus('録音を終了しました。未回答の項目を確認してください。');
+}
+
+function onTick() {
+  if (!S.recording) return;
+  const now = Date.now();
+  $('clock').textContent = fmt((now - S.startedAt) / 1000);
+  const left = CONFIG.CHUNK_SECONDS - (now - S.chunkStartedAt) / 1000;
+  if (left <= 0) { cutChunk(false); return; }
+  $('nextText').textContent = '次の自動読み込みまで ' + fmt(left);
+  if (S.rec && S.rec.ctx.state !== 'running') {
+    setStatus('録音が一時停止しました。画面をタップすると再開します。', true);
+    S.rec.ctx.resume().catch(() => {});
+  }
+  updateControls();
+}
+
+// 録音中の音声を区切って読み込み待ちに入れる
+function cutChunk(manual, minSec) {
+  const r = S.rec; if (!r) return;
+  const sec = r.samples / r.rate;
+  if (sec < (minSec || CONFIG.MIN_CHUNK_SECONDS)) {
+    if (manual) setStatus('まだ音声が短いため、もう少し話してから読み込んでください。');
+    if (!manual) S.chunkStartedAt = Date.now();
+    return;
+  }
+  const pcm = new Int16Array(r.samples);
+  let off = 0; r.parts.forEach(p => { pcm.set(p, off); off += p.length; });
+  r.parts = []; r.samples = 0;
+  S.chunkStartedAt = Date.now();
+  S.queue.push({ b64: toBase64(encodeWav(pcm, r.rate)), seconds: Math.round(sec), tries: 0 });
+  processQueue();
+}
+
+async function processQueue() {
+  if (S.busy) return;
+  S.busy = true; updateControls();
+  while (S.queue.length) {
+    const job = S.queue[0];
+    setStatus(`読み込み中…（${fmt(job.seconds)}分の会話${S.queue.length > 1 ? '・ほか' + (S.queue.length - 1) + '件待ち' : ''}）`);
+    try {
+      const items = currentItems();
+      const current = {}; items.forEach(i => { if (S.answers[i.id]) current[i.id] = { answer: S.answers[i.id].answer }; });
+      const d = await api('analyze', { patientId: S.pid, audio: job.b64, mimeType: 'audio/wav', itemIds: items.map(i => i.id), current });
+      S.queue.shift();
+      const n = mergeUpdates(d.updates);
+      setStatus(`読み込み完了：${n}件の項目を更新しました（${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}）`);
+    } catch (e) {
+      job.tries++;
+      S.busy = false; updateControls();
+      setStatus(`読み込みに失敗しました：${e.message}`, true, true);
+      return;
+    }
+  }
+  S.busy = false; updateControls();
+}
+
+/* ===== 音声の変換 ===== */
+function downsample(input, inRate, outRate) {
+  const ratio = inRate / outRate;
+  const len = Math.floor(input.length / ratio);
+  const out = new Int16Array(len);
+  for (let i = 0; i < len; i++) {
+    const s = Math.floor(i * ratio), e = Math.min(Math.floor((i + 1) * ratio), input.length);
+    let sum = 0; for (let j = s; j < e; j++) sum += input[j];
+    const v = Math.max(-1, Math.min(1, sum / Math.max(1, e - s)));
+    out[i] = v < 0 ? v * 0x8000 : v * 0x7FFF;
+  }
+  return out;
+}
+function encodeWav(pcm, rate) {
+  const buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+  new Int16Array(buf, 44).set(pcm);
+  return new Uint8Array(buf);
+}
+function toBase64(bytes) {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+/* ===== 画面を消さない ===== */
+async function keepAwake() {
+  try { if ('wakeLock' in navigator) S.wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+}
+function releaseAwake() { try { S.wakeLock && S.wakeLock.release(); } catch (e) {} S.wakeLock = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && S.recording) {
+    keepAwake();
+    if (S.rec) S.rec.ctx.resume().catch(() => {});
+  }
+});
+document.addEventListener('touchend', () => { if (S.rec && S.rec.ctx.state !== 'running') S.rec.ctx.resume().catch(() => {}); });
+
+/* ===== ボタン状態・表示 ===== */
+function updateControls() {
+  const rb = $('recBtn');
+  rb.disabled = !S.recording && !S.consent;
+  rb.classList.toggle('on', S.recording);
+  $('recLabel').textContent = S.recording ? '録音を終了' : '録音を開始';
+  $('consentRow').classList.toggle('hidden', S.recording);
+  const fb = $('forceBtn');
+  fb.textContent = S.recording ? '今すぐ読み込む' : (S.queue.length ? '再送する' : '今すぐ読み込む');
+  fb.disabled = S.busy || (!S.recording && !S.queue.length);
+  const sb = $('submitBtn'), hint = $('submitHint');
+  if (S.recording) { sb.disabled = true; hint.textContent = '録音を終了すると送信できます'; }
+  else if (S.busy || S.queue.length) { sb.disabled = true; hint.textContent = '読み込みが終わると送信できます'; }
+  else { sb.disabled = false; hint.textContent = ''; }
+}
+function setStatus(msg, isErr, withRetry) {
+  const el = $('status');
+  el.className = 'status' + (isErr ? ' err' : '');
+  el.textContent = msg;
+  if (withRetry) {
+    const b = document.createElement('button'); b.textContent = '再送';
+    b.onclick = () => processQueue(); el.appendChild(b);
+  }
+}
+const fmt = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+/* ===== 送信 ===== */
+$('submitBtn').onclick = async () => {
+  const items = currentItems();
+  const open = items.filter(i => statusOf(i.id) !== 'answered').length;
+  if (open && !confirm(`回答済みでない項目が${open}件あります。このまま送信しますか？`)) return;
+  const sb = $('submitBtn'); sb.disabled = true; sb.textContent = '送信中…';
+  try {
+    const answers = {}; items.forEach(i => { if (S.answers[i.id]) answers[i.id] = S.answers[i.id]; });
+    const d = await api('submit', { patientId: S.pid, month: S.month, therapist: S.settings.name, itemIds: items.map(i => i.id), answers, notes: $('notes').value });
+    store.del(draftKey());
+    $('doneText').textContent = `${S.patient.name} さん（${S.month}か月目）の記録を保存しました。` + (d.riskCount ? `休止リスクのサイン${d.riskCount}件を管理者に通知しました。` : '');
+    show('viewDone');
+  } catch (e) {
+    alert('送信できませんでした：' + e.message + '\n入力内容はこの端末に残っています。電波の良い場所で再度送信してください。');
+    sb.textContent = '記録を送信'; updateControls();
+  }
+};
+
+/* ===== デモ用 ===== */
+const DEMO_ITEMS = [
+  ['effect','効果の実感','1,4','「施術のあと、体が楽な感じってどれくらい続きます？」'],
+  ['life','生活の変化','1,4','「最近、前よりやりやすくなったことってありますか？」'],
+  ['goal','これからの目標','1,4','「これから、できるようになりたいことってありますか？」'],
+  ['schedule','曜日・時間帯','1,4','「今の曜日や時間、ご都合は大丈夫ですか？」'],
+  ['frequency','回数・施術時間','1,4','「回数や時間、ちょうどいい感じですか？」'],
+  ['cost','費用の負担感','1,4','「お支払いのことで、気になっていることはないですか？」'],
+  ['therapist','施術家とのやりとり','1,4','「『もっとこうしてほしい』ってことがあったら、遠慮なく言ってくださいね」'],
+  ['family','ご家族・ケアマネの意向','4','「ご家族は、施術について何かおっしゃってますか？」'],
+  ['continue','継続の意向','4','「これからも続けていけそうですか？気になることがあれば教えてください」']
+].map(r => ({ id: r[0], name: r[1], months: r[2].split(',').map(Number), prompt: r[3] }));
+const DEMO_ANS = {
+  effect: { status: 'answered', answer: '施術後2日ほど腰が軽い。3日目には元に戻る感じ。', evidence: '「2日くらいは楽」と話した' },
+  life: { status: 'answered', answer: 'トイレまで手すりなしで歩ける日が増えた。', evidence: '最近トイレが楽になったと話した' },
+  goal: { status: 'partial', answer: '近所の公園まで歩きたい様子。具体的な目標はまだ。', evidence: '公園の話題で「行けたらね」と話した' },
+  schedule: { status: 'answered', answer: '午前は通院と重なることがあり、午後の方が助かる。', evidence: '火曜午前は病院の日と話した', risk: true, riskReason: '時間帯の変更を希望' },
+  frequency: { status: 'answered', answer: '週2回でちょうど良い。', evidence: '今の回数で十分と話した' },
+  cost: { status: 'partial', answer: '支払いについて少し気にしている様子。', evidence: '年金の話の流れで触れた' },
+  therapist: { status: 'answered', answer: 'もう少し強めでも良い。話しやすいとのこと。', evidence: '強さの希望を伝えた' },
+  family: { status: 'answered', answer: '娘さんは表情が明るくなったと喜んでいる。', evidence: '娘からの話を伝えた' },
+  continue: { status: 'answered', answer: '続けたい気持ちがある。', evidence: '「続けたい」と話した' }
+};
+async function demoApi(action, p) {
+  await new Promise(r => setTimeout(r, action === 'analyze' ? 1500 : 500));
+  if (action === 'init') return { patient: { id: S.pid || 'P0001', name: 'テスト患者A', therapist: S.settings.name, month: 1 }, targetMonths: [1, 4], isTarget: true, items: DEMO_ITEMS };
+  if (action === 'analyze') {
+    const open = p.itemIds.filter(id => statusOf(id) !== 'answered');
+    const pick = open.sort(() => Math.random() - .5).slice(0, 2);
+    return { updates: pick.map(id => ({ id, ...DEMO_ANS[id] })) };
+  }
+  if (action === 'submit') return { saved: true, riskCount: Object.values(p.answers).filter(a => a.risk).length };
+}
+
+boot();
+</script>
+</body>
+</html>
