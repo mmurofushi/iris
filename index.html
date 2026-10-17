@@ -10,20 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #F3F5F8;
-  --surface: #FFFFFF;
-  --ink: #1E2838;
-  --sub: #5C6778;
-  --line: #DCE1E8;
-  --ai: #2B4C7E;       /* 藍：主要操作 */
-  --ai-weak: #E3EAF4;
-  --ok: #357650;       /* 回答済み */
-  --ok-weak: #E2F0E7;
-  --part: #9C6E14;     /* 一部 */
-  --part-weak: #F6EDD9;
-  --none: #8A93A3;     /* 未回答 */
-  --risk: #B03A2E;
-  --risk-weak: #F8E3E0;
+  --bg: #F3F5F8; --surface: #FFFFFF; --ink: #1E2838; --sub: #5C6778; --line: #DCE1E8;
+  --ai: #2B4C7E; --ai-weak: #E3EAF4;
+  --ok: #357650; --ok-weak: #E2F0E7;
+  --part: #9C6E14; --part-weak: #F6EDD9;
+  --none: #8A93A3;
+  --risk: #B03A2E; --risk-weak: #F8E3E0;
   --rec: #C8362B;
   --font: "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
   color-scheme: light;
@@ -40,7 +32,6 @@
   }
 }
 *, *::before, *::after { box-sizing: inherit; }
-html { scroll-padding-top: env(safe-area-inset-top, 0px); }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -48,17 +39,54 @@ button { cursor: pointer; }
 .wrap { max-width: 560px; margin: 0 auto; padding: 12px 14px 120px; }
 .hidden { display: none !important; }
 
-/* 見出し */
-.top { display: flex; align-items: center; gap: 10px; padding: 6px 0 12px; }
-.who { flex: 1; min-width: 0; }
-.who h1 { margin: 0; font-size: 1.25rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.who .pid { color: var(--sub); font-size: .85rem; }
-.switch { margin-top: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ai); border-radius: 6px; padding: 3px 10px; font-size: .82rem; font-weight: 700; }
-.month { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 8px; font-weight: 700; }
-.icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; width: 40px; height: 40px; font-size: 1.1rem; }
-.notice { background: var(--part-weak); color: var(--ink); border-radius: 8px; padding: 8px 12px; font-size: .9rem; margin-bottom: 10px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 16px; }
+.panel h2 { margin: 0 0 12px; font-size: 1.15rem; }
+.panel p { margin: 0 0 12px; color: var(--sub); font-size: .92rem; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: .9rem; margin-bottom: 4px; }
+.field input, .field select { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 12px 10px; }
+.primary { width: 100%; border: none; border-radius: 10px; padding: 14px; font-weight: 700; background: var(--ai); color: #fff; }
+.secondary { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-weight: 700; background: var(--surface); color: var(--ink); margin-top: 10px; }
 
-/* 録音パネル */
+/* 上部バー */
+.bar { display: flex; align-items: center; gap: 10px; padding: 6px 0 12px; }
+.bar .grow { flex: 1; min-width: 0; }
+.bar h1 { margin: 0; font-size: 1.2rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar .sub { color: var(--sub); font-size: .85rem; }
+.icon-btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; min-width: 40px; height: 40px; padding: 0 10px; font-size: .95rem; white-space: nowrap; }
+
+/* 患者一覧 */
+.search { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 12px; }
+.listopts { display: flex; justify-content: space-between; align-items: center; margin: 10px 2px; font-size: .9rem; color: var(--sub); }
+.listopts label { display: flex; gap: 8px; align-items: center; }
+.listopts input { width: 20px; height: 20px; }
+.plist { display: flex; flex-direction: column; gap: 8px; }
+.pcard { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.pcard .grow { flex: 1; min-width: 0; }
+.pcard strong { display: block; font-size: 1.05rem; }
+.pcard small { color: var(--sub); }
+.tag { font-size: .78rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; background: var(--line); color: var(--sub); }
+.tag.doing { background: var(--part-weak); color: var(--part); }
+.tag.done { background: var(--ok-weak); color: var(--ok); }
+.empty { color: var(--sub); text-align: center; padding: 30px 10px; }
+
+/* 時期の選択 */
+.mbtn { width: 100%; text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+.mbtn.sug { border-color: var(--ai); }
+.mbtn .grow { flex: 1; }
+.mbtn strong { font-size: 1.1rem; display: block; }
+.mbtn small { color: var(--sub); }
+.sugbadge { font-size: .75rem; background: var(--ai); color: #fff; border-radius: 99px; padding: 2px 8px; margin-left: 6px; vertical-align: middle; }
+
+/* アンケート */
+.state { border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
+.state.doing { background: var(--part-weak); }
+.state.done { background: var(--ok-weak); color: var(--ok); }
+.state strong { font-size: 1.05rem; display: block; }
+.state span { font-size: .88rem; color: var(--sub); }
+.state.done span { color: var(--ok); }
+.notice { background: var(--ai-weak); border-radius: 8px; padding: 8px 12px; font-size: .88rem; margin-bottom: 10px; }
+
 .rec { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
 .consent { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; margin-bottom: 12px; }
 .consent input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
@@ -73,11 +101,10 @@ button { cursor: pointer; }
 .next { color: var(--sub); font-size: .85rem; text-align: right; }
 .force { width: 100%; margin-top: 12px; border: 2px solid var(--ai); background: var(--ai-weak); color: var(--ai); border-radius: 10px; padding: 12px; font-weight: 700; }
 .force:disabled { opacity: .4; }
-.status { margin-top: 10px; font-size: .88rem; color: var(--sub); min-height: 1.4em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status { margin-top: 10px; font-size: .88rem; color: var(--sub); min-height: 1.4em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; word-break: break-all; }
 .status.err { color: var(--risk); }
 .status button { border: 1px solid currentColor; background: none; border-radius: 6px; padding: 2px 10px; color: inherit; }
 
-/* 進み具合 */
 .progress { margin: 18px 2px 8px; }
 .progress-head { display: flex; justify-content: space-between; align-items: baseline; }
 .progress-head strong { font-size: 1.05rem; }
@@ -86,13 +113,15 @@ button { cursor: pointer; }
 .strip i { flex: 1; height: 10px; border-radius: 3px; background: var(--line); transition: background .3s; }
 .strip i.answered { background: var(--ok); }
 .strip i.partial { background: var(--part); }
-.filter { display: flex; gap: 8px; align-items: center; margin: 12px 2px 6px; font-size: .9rem; color: var(--sub); }
-.filter input { width: 20px; height: 20px; }
-
 .risk-banner { background: var(--risk-weak); color: var(--risk); border-radius: 10px; padding: 10px 12px; font-weight: 700; margin: 10px 0; font-size: .92rem; }
 
-/* 項目 */
-.items { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.sec { font-size: .95rem; font-weight: 700; margin: 18px 2px 8px; color: var(--sub); }
+.items { display: flex; flex-direction: column; gap: 10px; }
+details.donebox > summary { list-style: none; cursor: pointer; font-size: .95rem; font-weight: 700; margin: 18px 2px 8px; color: var(--ok); }
+details.donebox > summary::-webkit-details-marker { display: none; }
+details.donebox > summary::before { content: "▸ "; }
+details.donebox[open] > summary::before { content: "▾ "; }
+
 .item { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--none); border-radius: 10px; padding: 12px 14px; }
 .item.answered { border-left-color: var(--ok); }
 .item.partial { border-left-color: var(--part); }
@@ -101,8 +130,9 @@ button { cursor: pointer; }
 .item-head { display: flex; align-items: center; gap: 8px; }
 .item-head h2 { margin: 0; font-size: 1rem; flex: 1; }
 .chip { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--line); color: var(--sub); white-space: nowrap; }
-.answered .chip { background: var(--ok-weak); color: var(--ok); }
-.partial .chip { background: var(--part-weak); color: var(--part); }
+.chip.rec { background: var(--ai); color: #fff; }
+.answered .chip.st { background: var(--ok-weak); color: var(--ok); }
+.partial .chip.st { background: var(--part-weak); color: var(--part); }
 .ask { margin: 8px 0 0; padding: 8px 10px; background: var(--ai-weak); border-radius: 8px; font-size: .95rem; }
 .ask small { display: block; color: var(--sub); font-size: .75rem; }
 .answered .ask { display: none; }
@@ -113,64 +143,76 @@ textarea.ans { width: 100%; margin-top: 8px; border: 1px solid var(--line); back
 .item-foot input { width: 18px; height: 18px; }
 .item.has-risk .item-foot label { color: var(--risk); font-weight: 700; }
 
-/* 送信 */
 .send-area { margin-top: 18px; }
 .send-area label { font-size: .9rem; color: var(--sub); }
 .send-area textarea { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px 10px; min-height: 4em; margin-top: 4px; }
 .submit { width: 100%; margin-top: 12px; border: none; border-radius: 12px; padding: 16px; font-size: 1.05rem; font-weight: 700; background: var(--ok); color: #fff; }
 .submit:disabled { opacity: .4; }
 .hint { font-size: .85rem; color: var(--sub); margin-top: 6px; text-align: center; }
-
-/* 画面（設定・ID入力・完了） */
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 20px; }
-.panel h2 { margin: 0 0 12px; font-size: 1.15rem; }
-.panel p { margin: 0 0 12px; color: var(--sub); font-size: .92rem; }
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: .9rem; margin-bottom: 4px; }
-.field input { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 10px; }
-.primary { width: 100%; border: none; border-radius: 10px; padding: 14px; font-weight: 700; background: var(--ai); color: #fff; }
-.demo { background: var(--ai-weak); color: var(--ai); border-radius: 8px; padding: 6px 12px; font-size: .85rem; margin-bottom: 10px; }
-.done-mark { font-size: 2.4rem; }
+.done-mark { font-size: 2.4rem; color: var(--ok); }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div id="demoBanner" class="demo hidden">デモモード：AIの解析は行わず、見本の回答が入ります。</div>
 
-  <!-- 設定 -->
-  <section id="viewSettings" class="panel hidden">
-    <h2>はじめての設定</h2>
-    <p>この端末に保存されます。次回からは入力不要です。</p>
-    <div class="field"><label for="setName">施術家名</label><input id="setName" autocomplete="name"></div>
-    <div class="field"><label for="setCode">アクセスコード（管理者から共有）</label><input id="setCode" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
-    <button class="primary" id="saveSettings">保存する</button>
+  <!-- ログイン -->
+  <section id="viewLogin" class="panel hidden">
+    <h2>はじめに</h2>
+    <p>この端末に記憶されるので、次回からは入力不要です。</p>
+    <div id="loginStep1">
+      <div class="field"><label for="codeInput">アクセスコード（管理者から共有）</label>
+        <input id="codeInput" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      <button class="primary" id="codeNext">次へ</button>
+    </div>
+    <div id="loginStep2" class="hidden">
+      <div class="field"><label for="nameSel">あなたの名前</label><select id="nameSel"></select></div>
+      <button class="primary" id="loginGo">この名前で始める</button>
+    </div>
+    <div class="status err" id="loginErr"></div>
   </section>
 
-  <!-- ID入力 -->
-  <section id="viewPid" class="panel hidden">
-    <h2>患者IDを入力</h2>
-    <p>次の患者さんのQRコードをiPhoneのカメラで読み取ると、その方の画面が開きます。QRがないときはIDを入力してください。</p>
-    <div class="field"><label for="pidInput">患者ID</label><input id="pidInput" inputmode="latin" autocapitalize="characters" placeholder="例：P0001"></div>
-    <button class="primary" id="pidGo">開く</button>
-  </section>
-
-  <!-- 読み込み中 -->
+  <!-- 読み込み中・エラー -->
   <section id="viewLoading" class="panel hidden">
-    <p id="loadingText">患者情報を読み込んでいます…</p>
+    <p id="loadingText">読み込んでいます…</p>
     <div id="loadingActions" class="hidden">
       <button class="primary" id="loadRetry">もう一度読み込む</button>
-      <button class="primary" id="loadSettings" style="margin-top:10px;background:var(--sub)">施術家名とアクセスコードを入力し直す</button>
+      <button class="secondary" id="loadHome">患者一覧に戻る</button>
     </div>
   </section>
 
-  <!-- メイン -->
-  <main id="viewMain" class="hidden">
-    <div class="top">
-      <div class="who"><h1 id="pName"></h1><div class="pid" id="pId"></div><button class="switch" id="switchBtn">別の患者に切り替える</button></div>
-      <select id="monthSel" class="month" aria-label="アンケートの時期"></select>
-      <button class="icon-btn" id="openSettings" aria-label="設定">⚙</button>
+  <!-- 患者一覧 -->
+  <section id="viewHome" class="hidden">
+    <div class="bar">
+      <div class="grow"><h1 id="meName"></h1><div class="sub">担当の患者さんを選んでください</div></div>
+      <button class="icon-btn" id="reloadBtn" aria-label="更新">↻</button>
+      <button class="icon-btn" id="logoutBtn">名前の変更</button>
     </div>
-    <div id="notTarget" class="notice hidden"></div>
+    <input class="search" id="search" type="search" placeholder="名前・IDで探す">
+    <div class="listopts">
+      <label><input type="checkbox" id="showAll">担当以外も表示</label>
+      <span id="listCount"></span>
+    </div>
+    <div class="plist" id="plist"></div>
+  </section>
+
+  <!-- 時期の選択 -->
+  <section id="viewPatient" class="hidden">
+    <div class="bar">
+      <button class="icon-btn" id="backHome1">← 一覧</button>
+      <div class="grow"><h1 id="ppName"></h1><div class="sub" id="ppSub"></div></div>
+    </div>
+    <div class="sec">どのアンケートを進めますか？</div>
+    <div id="mlist"></div>
+  </section>
+
+  <!-- アンケート -->
+  <main id="viewSurvey" class="hidden">
+    <div class="bar">
+      <button class="icon-btn" id="backHome2">← 一覧</button>
+      <div class="grow"><h1 id="svName"></h1><div class="sub" id="svSub"></div></div>
+    </div>
+    <div id="restored" class="notice hidden">前回送信していなかった内容を復元しました。</div>
+    <div class="state" id="stateBox"><strong id="stateTitle"></strong><span id="stateSub"></span></div>
 
     <section class="rec" aria-label="録音">
       <label class="consent" id="consentRow"><input type="checkbox" id="consent"><span>ご本人（必要に応じてご家族）に、会話を記録に使うことの同意をいただいている</span></label>
@@ -184,42 +226,43 @@ textarea.ans { width: 100%; margin-top: 8px; border: 1px solid var(--line); back
     </section>
 
     <div class="progress">
-      <div class="progress-head"><strong id="progText">0 / 0 項目</strong><span id="progSub"></span></div>
+      <div class="progress-head"><strong id="progText"></strong><span id="progSub"></span></div>
       <div class="strip" id="strip"></div>
     </div>
     <div id="riskBanner" class="risk-banner hidden"></div>
-    <label class="filter"><input type="checkbox" id="onlyOpen">未回答と一部だけ表示</label>
-    <div class="items" id="items"></div>
+
+    <div class="sec" id="openHead"></div>
+    <div class="items" id="openItems"></div>
+    <details class="donebox" id="doneBox"><summary id="doneHead"></summary><div class="items" id="doneItems"></div></details>
 
     <div class="send-area">
       <label for="notes">備考（任意）</label>
       <textarea id="notes" placeholder="気になったこと、申し送りなど"></textarea>
-      <button class="submit" id="submitBtn" disabled>記録を送信</button>
+      <button class="submit" id="submitBtn" disabled>この訪問の記録を送信</button>
       <div class="hint" id="submitHint"></div>
     </div>
   </main>
 
   <!-- 完了 -->
   <section id="viewDone" class="panel hidden">
-    <div class="done-mark">✓</div>
-    <h2>記録を送信しました</h2>
+    <div class="done-mark" id="doneMark">✓</div>
+    <h2 id="doneTitle"></h2>
     <p id="doneText"></p>
     <p>音声は端末にもサーバーにも残っていません。</p>
-    <button class="primary" id="nextPatient">次の患者を開く</button>
+    <button class="primary" id="doneHome">患者一覧に戻る</button>
   </section>
 </div>
 
 <script>
 /* ===== 設定 ===== */
 const CONFIG = {
-  API_URL: 'https://script.google.com/macros/s/AKfycbw7NXsndlUOfP26D7Dh3mgbBC64S-qhPz85lurebU_g8TJpwWPnOStK5mcWjJGOec773A/exec',            // Apps ScriptのウェブアプリURLを貼る。空のままだとデモモード
+  API_URL: 'https://script.google.com/macros/s/AKfycbw7NXsndlUOfP26D7Dh3mgbBC64S-qhPz85lurebU_g8TJpwWPnOStK5mcWjJGOec773A/exec',
   CHUNK_SECONDS: 300,     // 自動読み込みの間隔（秒）
   MIN_CHUNK_SECONDS: 5,   // これより短い音声は読み込まない
   SAMPLE_RATE: 12000      // 音声の品質。8000にすると通信量が約3分の2に減る
 };
-const DEMO = !CONFIG.API_URL;
 
-/* ===== 端末保存（失敗しても動くように） ===== */
+/* ===== 端末保存 ===== */
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -228,194 +271,285 @@ const store = {
 
 /* ===== 状態 ===== */
 const S = {
-  settings: store.get('iris.settings') || { name: '', code: '' },
-  pid: '', patient: null, allItems: [], targetMonths: [], month: 0,
-  answers: {}, consent: false,
+  auth: store.get('iris.auth'),           // { code, name }
+  tmpCode: '',
+  patients: [], targetMonths: [], visitsTarget: 4, showAll: false,
+  patient: null,                           // 一覧での患者情報
+  cur: null,                               // { pid, name, month, items, answers, changed, visits, visitsTarget }
   rec: null, recording: false, startedAt: 0, chunkStartedAt: 0, tick: null,
-  queue: [], busy: false, wakeLock: null, lastError: ''
+  queue: [], busy: false, wakeLock: null
 };
 const $ = id => document.getElementById(id);
-const show = (id) => ['viewSettings','viewPid','viewLoading','viewMain','viewDone'].forEach(v => $(v).classList.toggle('hidden', v !== id));
-const draftKey = () => 'iris.draft.' + S.pid + '.' + new Date().toISOString().slice(0, 10);
+const VIEWS = ['viewLogin', 'viewLoading', 'viewHome', 'viewPatient', 'viewSurvey', 'viewDone'];
+const show = id => { VIEWS.forEach(v => $(v).classList.toggle('hidden', v !== id)); window.scrollTo(0, 0); };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
 /* ===== API ===== */
 async function api(action, payload) {
-  if (DEMO) return demoApi(action, payload);
+  const code = S.auth ? S.auth.code : S.tmpCode;
   const res = await fetch(CONFIG.API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action, accessCode: S.settings.code, ...payload })
+    body: JSON.stringify({ action, accessCode: code, ...payload })
   });
   if (!res.ok) throw new Error('通信エラー（' + res.status + '）');
   const data = await res.json();
-  if (!data.ok) throw new Error(data.error || '不明なエラー');
+  if (!data.ok) {
+    if (/アクセスコード/.test(data.error || '')) { store.del('iris.auth'); S.auth = null; }
+    throw new Error(data.error || '不明なエラー');
+  }
   return data;
 }
 
-/* ===== 起動 ===== */
-function boot() {
-  $('demoBanner').classList.toggle('hidden', !DEMO);
-  S.pid = (new URLSearchParams(location.search).get('pid') || '').trim();
-  if (!S.settings.name || (!DEMO && !S.settings.code)) return openSettings();
-  if (!S.pid) return show('viewPid');
-  loadPatient();
+function showLoading(text) { show('viewLoading'); $('loadingText').textContent = text; $('loadingActions').classList.add('hidden'); }
+let retryFn = null;
+function showError(msg, retry) {
+  if (!S.auth) { openLogin(msg); return; }
+  show('viewLoading'); $('loadingText').textContent = msg;
+  retryFn = retry; $('loadingActions').classList.remove('hidden');
 }
-function openSettings() {
-  $('setName').value = S.settings.name; $('setCode').value = S.settings.code;
-  show('viewSettings');
+$('loadRetry').onclick = () => retryFn && retryFn();
+$('loadHome').onclick = () => loadHome();
+
+/* ===== ログイン ===== */
+function openLogin(err) {
+  show('viewLogin');
+  $('loginStep1').classList.remove('hidden'); $('loginStep2').classList.add('hidden');
+  $('loginErr').textContent = err || '';
 }
-$('saveSettings').onclick = () => {
-  const name = $('setName').value.trim(), code = $('setCode').value.trim();
-  if (!name || (!DEMO && !code)) { alert('施術家名とアクセスコードを入力してください。'); return; }
-  S.settings = { name, code }; store.set('iris.settings', S.settings);
-  if (S.patient) { show('viewMain'); return; }
-  S.pid ? loadPatient() : show('viewPid');
-};
-$('openSettings').onclick = () => { if (S.recording) { alert('録音中は設定を開けません。'); return; } openSettings(); };
-$('pidGo').onclick = () => {
-  const v = $('pidInput').value.trim().toUpperCase();
-  if (!v) return;
-  S.pid = v; history.replaceState(null, '', '?pid=' + encodeURIComponent(v));
-  loadPatient();
-};
-
-$('loadRetry').onclick = () => loadPatient();
-$('loadSettings').onclick = () => openSettings();
-
-// 患者の切り替え（QRを読み直すか、IDを入力）
-function switchPatient() {
-  if (S.recording) { alert('録音中は切り替えられません。先に「録音を終了」を押してください。'); return; }
-  if (S.busy || S.queue.length) { if (!confirm('読み込みが終わっていない音声があります。破棄して切り替えますか？')) return; S.queue = []; }
-  S.pid = ''; S.patient = null; S.answers = {}; S.consent = false;
-  $('notes').value = ''; $('pidInput').value = ''; $('status').textContent = ''; $('clock').textContent = '0:00';
-  $('nextText').textContent = '録音すると5分ごとに自動で読み込みます';
-  history.replaceState(null, '', location.pathname);
-  show('viewPid');
-}
-$('switchBtn').onclick = () => switchPatient();
-$('nextPatient').onclick = () => switchPatient();
-
-async function loadPatient() {
-  show('viewLoading'); $('loadingText').textContent = '患者情報を読み込んでいます…';
-  $('loadingActions').classList.add('hidden');
+$('codeNext').onclick = async () => {
+  const code = $('codeInput').value.trim();
+  if (!code) return;
+  S.tmpCode = code; $('loginErr').textContent = '確認しています…';
   try {
-    const d = await api('init', { patientId: S.pid });
-    S.patient = d.patient; S.allItems = d.items; S.targetMonths = d.targetMonths;
+    const d = await api('login', {});
+    $('nameSel').innerHTML = '<option value="">選んでください</option>' + d.therapists.map(n => `<option>${esc(n)}</option>`).join('');
+    $('loginStep1').classList.add('hidden'); $('loginStep2').classList.remove('hidden'); $('loginErr').textContent = '';
+  } catch (e) { $('loginErr').textContent = e.message; }
+};
+$('loginGo').onclick = () => {
+  const name = $('nameSel').value;
+  if (!name) { $('loginErr').textContent = '名前を選んでください。'; return; }
+  S.auth = { code: S.tmpCode, name }; store.set('iris.auth', S.auth);
+  loadHome();
+};
+$('logoutBtn').onclick = () => {
+  if (!confirm('名前を選び直しますか？')) return;
+  store.del('iris.auth'); S.auth = null; $('codeInput').value = ''; openLogin();
+};
+
+/* ===== 患者一覧 ===== */
+async function loadHome() {
+  if (!S.auth) return openLogin();
+  showLoading('患者一覧を読み込んでいます…');
+  try {
+    const d = await api('patients', { therapist: S.auth.name, all: S.showAll });
+    S.patients = d.patients; S.targetMonths = d.targetMonths; S.visitsTarget = d.visitsTarget;
+    $('meName').textContent = S.auth.name + ' さん';
+    $('showAll').checked = S.showAll;
+    renderList(); show('viewHome');
+    const pid = new URLSearchParams(location.search).get('pid');
+    if (pid) { history.replaceState(null, '', location.pathname); const p = S.patients.find(x => x.id === pid); if (p) openPatient(p.id); }
+  } catch (e) { showError(e.message, loadHome); }
+}
+$('reloadBtn').onclick = () => loadHome();
+$('showAll').onchange = e => { S.showAll = e.target.checked; loadHome(); };
+$('search').oninput = () => renderList();
+
+function mainSurvey(p) { return p.surveys.find(s => s.month === p.suggested) || p.surveys[0]; }
+function surveyTag(s) {
+  if (!s) return '<span class="tag">対象外</span>';
+  if (s.status === '完了') return `<span class="tag done">${s.month}か月目 完了</span>`;
+  if (s.status === '実施中') return `<span class="tag doing">${s.month}か月目 ${s.answered}/${s.total}</span>`;
+  return `<span class="tag">${s.month}か月目 未実施</span>`;
+}
+function renderList() {
+  const q = $('search').value.trim().toLowerCase();
+  const rank = p => { const s = mainSurvey(p); return !s ? 3 : s.status === '実施中' ? 0 : s.status === '未実施' ? 1 : 2; };
+  const list = S.patients
+    .filter(p => !q || (p.name + p.id).toLowerCase().includes(q))
+    .sort((a, b) => rank(a) - rank(b) || String(a.name).localeCompare(String(b.name), 'ja'));
+  $('listCount').textContent = list.length + '人';
+  $('plist').innerHTML = list.length ? list.map(p => `
+    <button class="pcard" data-id="${esc(p.id)}">
+      <div class="grow"><strong>${esc(p.name)}</strong><small>ID ${esc(p.id)}・開始から${p.month}か月目${p.mine ? '' : '・担当外'}</small></div>
+      ${surveyTag(mainSurvey(p))}
+    </button>`).join('') : '<div class="empty">該当する患者さんがいません。<br>「担当以外も表示」を試すか、管理者に「患者」シートの担当施術家を確認してください。</div>';
+  document.querySelectorAll('.pcard').forEach(b => b.onclick = () => openPatient(b.dataset.id));
+}
+
+/* ===== 時期の選択 ===== */
+function openPatient(pid) {
+  const p = S.patients.find(x => x.id === pid); if (!p) return;
+  S.patient = p;
+  $('ppName').textContent = p.name + ' さん';
+  $('ppSub').textContent = 'ID ' + p.id + '・開始から' + p.month + 'か月目';
+  $('mlist').innerHTML = p.surveys.map(s => {
+    const st = s.status === '完了' ? `完了（${s.visits}回の訪問）` : s.status === '実施中' ? `実施中・${s.answered}/${s.total}項目・訪問${s.visits}回` : `未実施・${s.total}項目`;
+    return `<button class="mbtn ${s.month === p.suggested ? 'sug' : ''}" data-m="${s.month}">
+      <div class="grow"><strong>${s.month}か月目アンケート${s.month === p.suggested ? '<span class="sugbadge">今の時期</span>' : ''}</strong><small>${st}</small></div>
+      ${surveyTag(s)}</button>`;
+  }).join('');
+  document.querySelectorAll('.mbtn').forEach(b => b.onclick = () => openSurvey(pid, parseInt(b.dataset.m, 10)));
+  show('viewPatient');
+}
+$('backHome1').onclick = () => { renderList(); show('viewHome'); };
+
+/* ===== アンケート ===== */
+const draftKey = () => 'iris.draft.' + S.cur.pid + '.' + S.cur.month;
+const consentKey = pid => 'iris.consent.' + pid;
+
+async function openSurvey(pid, month) {
+  showLoading('アンケートを読み込んでいます…');
+  try {
+    const d = await api('open', { patientId: pid, month });
+    S.cur = { pid, name: d.patient.name, pmonth: d.patient.month, month, items: d.items, answers: d.answers || {}, changed: [], visits: d.visits, visitsTarget: d.visitsTarget };
     const draft = store.get(draftKey());
-    S.month = draft && draft.month ? draft.month : (d.isTarget ? d.patient.month : d.targetMonths[0]);
-    S.answers = draft && draft.answers ? draft.answers : {};
-    S.consent = !!(draft && draft.consent);
-    if (draft && draft.notes) $('notes').value = draft.notes;
-    setupMain(d.isTarget);
-    show('viewMain');
-  } catch (e) {
-    $('loadingText').textContent = e.message;
-    $('loadingActions').classList.remove('hidden');
-    if (/アクセスコード/.test(e.message)) { alert(e.message); openSettings(); }
-  }
+    let restored = false;
+    if (draft && draft.changed && draft.changed.length && Date.now() - draft.savedAt < 3 * 86400000) {
+      draft.changed.forEach(id => { if (draft.answers[id]) S.cur.answers[id] = draft.answers[id]; });
+      S.cur.changed = draft.changed.slice(); $('notes').value = draft.notes || ''; restored = true;
+    } else { $('notes').value = ''; }
+    S.cur.recIds = recommendIds();
+    $('restored').classList.toggle('hidden', !restored);
+    $('svName').textContent = S.cur.name + ' さん';
+    $('svSub').textContent = `${month}か月目アンケート・今回は${S.cur.visits + 1}回目の訪問`;
+    $('consent').checked = !!store.get(consentKey(pid));
+    $('status').textContent = ''; $('clock').textContent = '0:00'; $('nextText').textContent = '録音すると5分ごとに自動で読み込みます';
+    renderItems(); show('viewSurvey');
+  } catch (e) { showError(e.message, () => openSurvey(pid, month)); }
 }
 
-function setupMain(isTarget) {
-  $('pName').textContent = S.patient.name + ' さん';
-  $('pId').textContent = 'ID ' + S.patient.id + '・開始から' + S.patient.month + 'か月目';
-  const months = [...new Set([...S.targetMonths, S.patient.month])].filter(m => m > 0).sort((a, b) => a - b);
-  $('monthSel').innerHTML = months.map(m => `<option value="${m}">${m}か月目</option>`).join('');
-  $('monthSel').value = S.month;
-  const nt = $('notTarget');
-  if (!isTarget) { nt.textContent = `いまは${S.patient.month}か月目で、アンケートの対象時期ではありません。必要なら右上で時期を選んでください。`; nt.classList.remove('hidden'); }
-  else nt.classList.add('hidden');
-  $('consent').checked = S.consent;
-  renderItems(); updateControls();
+function saveDraft() {
+  if (!S.cur) return;
+  const answers = {}; S.cur.changed.forEach(id => { answers[id] = S.cur.answers[id]; });
+  store.set(draftKey(), { changed: S.cur.changed, answers, notes: $('notes').value, savedAt: Date.now() });
 }
-$('monthSel').onchange = e => { S.month = parseInt(e.target.value, 10); saveDraft(); renderItems(); };
-$('consent').onchange = e => { S.consent = e.target.checked; saveDraft(); updateControls(); };
-$('onlyOpen').onchange = () => applyFilter();
-$('notes').oninput = () => saveDraft();
+function markChanged(id) { if (S.cur.changed.indexOf(id) < 0) S.cur.changed.push(id); }
 
-function currentItems() { return S.allItems.filter(i => i.months.indexOf(S.month) >= 0); }
-function saveDraft() { store.set(draftKey(), { month: S.month, answers: S.answers, consent: S.consent, notes: $('notes').value }); }
-
-/* ===== 項目の表示 ===== */
-const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const statusOf = id => (S.answers[id] && S.answers[id].status) || 'none';
+const statusOf = id => (S.cur.answers[id] && S.cur.answers[id].status) || 'none';
+const isDone = id => statusOf(id) === 'answered' && String(S.cur.answers[id].answer || '').trim();
 const LABEL = { none: '未回答', partial: '一部', answered: '回答済み' };
 
+// 今回の訪問で聞くと良い項目（残り÷残りの訪問回数）
+function recommendIds() {
+  const open = S.cur.items.filter(i => !isDone(i.id));
+  const visitsLeft = Math.max(1, S.cur.visitsTarget - S.cur.visits);
+  return open.slice(0, Math.ceil(open.length / visitsLeft)).map(i => i.id);
+}
+
+function cardHtml(it) {
+  const rec = S.cur.recIds.indexOf(it.id) >= 0 && !isDone(it.id);
+  return `<article class="item" id="item-${esc(it.id)}" data-id="${esc(it.id)}">
+    <div class="item-head"><h2>${esc(it.name)}</h2>${rec ? '<span class="chip rec">今回の目安</span>' : ''}<span class="chip st"></span></div>
+    <p class="ask"><small>聞き方の例</small>${esc(it.prompt)}</p>
+    <textarea class="ans" rows="2" placeholder="聞き取った内容（自動で入ります。直接書き足しても構いません）"></textarea>
+    <div class="evidence"></div>
+    <div class="item-foot"><label><input type="checkbox" class="riskchk">休止リスクのサイン</label><span class="src"></span></div>
+  </article>`;
+}
+
 function renderItems() {
-  $('items').innerHTML = currentItems().map(it => `
-    <article class="item" id="item-${esc(it.id)}" data-id="${esc(it.id)}">
-      <div class="item-head"><h2>${esc(it.name)}</h2><span class="chip"></span></div>
-      <p class="ask"><small>聞き方の例</small>${esc(it.prompt)}</p>
-      <textarea class="ans" rows="2" placeholder="聞き取った内容（自動で入ります。直接書き足しても構いません）"></textarea>
-      <div class="evidence"></div>
-      <div class="item-foot"><label><input type="checkbox" class="riskchk">休止リスクのサイン</label><span class="src"></span></div>
-    </article>`).join('');
+  const open = S.cur.items.filter(i => !isDone(i.id));
+  const done = S.cur.items.filter(i => isDone(i.id));
+  const wasOpen = $('doneBox').open;
+  $('openHead').textContent = open.length ? `まだの項目（${open.length}）` : 'まだの項目はありません';
+  $('openItems').innerHTML = open.map(cardHtml).join('');
+  $('doneHead').textContent = `聞き取り済み（${done.length}）`;
+  $('doneItems').innerHTML = done.map(cardHtml).join('');
+  $('doneBox').classList.toggle('hidden', !done.length);
+  $('doneBox').open = wasOpen;
   document.querySelectorAll('.item').forEach(card => {
     const id = card.dataset.id;
     card.querySelector('.ans').addEventListener('input', e => {
-      const prev = S.answers[id] || {};
+      const prev = S.cur.answers[id] || {};
       const v = e.target.value;
-      S.answers[id] = { ...prev, answer: v, status: v.trim() ? 'answered' : 'none', manual: true };
-      saveDraft(); paintCard(id, false); paintProgress();
+      S.cur.answers[id] = { ...prev, answer: v, status: v.trim() ? 'answered' : 'none', manual: true };
+      markChanged(id); saveDraft(); paintCard(id, false); paintSummary();
     });
     card.querySelector('.riskchk').addEventListener('change', e => {
-      const prev = S.answers[id] || { status: 'none', answer: '' };
-      S.answers[id] = { ...prev, risk: e.target.checked, riskReason: e.target.checked ? (prev.riskReason || '施術家が判断') : '' };
-      saveDraft(); paintCard(id, false); paintProgress();
+      const prev = S.cur.answers[id] || { status: 'none', answer: '' };
+      S.cur.answers[id] = { ...prev, risk: e.target.checked, riskReason: e.target.checked ? (prev.riskReason || '施術家が判断') : '' };
+      markChanged(id); saveDraft(); paintCard(id, false); paintSummary();
     });
     paintCard(id, true);
   });
-  paintProgress(); applyFilter();
+  paintSummary();
 }
 
 function paintCard(id, setText, flash) {
   const card = $('item-' + id); if (!card) return;
-  const a = S.answers[id] || {};
+  const a = S.cur.answers[id] || {};
   const st = statusOf(id);
   card.classList.remove('answered', 'partial'); if (st !== 'none') card.classList.add(st);
   card.classList.toggle('has-risk', !!a.risk);
-  card.querySelector('.chip').textContent = LABEL[st];
+  card.querySelector('.chip.st').textContent = LABEL[st];
   const ta = card.querySelector('.ans');
   if (setText && document.activeElement !== ta) ta.value = a.answer || '';
   card.querySelector('.evidence').textContent = a.evidence ? '根拠：' + a.evidence : '';
   card.querySelector('.riskchk').checked = !!a.risk;
-  card.querySelector('.src').textContent = a.manual ? '手入力あり' : (a.answer ? 'AIが記入' : '');
+  card.querySelector('.src').textContent = S.cur.changed.indexOf(id) >= 0 ? (a.manual ? '今回・手入力' : '今回・AIが記入') : (a.answer ? '前回までに記入' : '');
   if (flash) { card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); }
 }
 
-function paintProgress() {
-  const items = currentItems();
-  const sts = items.map(i => statusOf(i.id));
-  const done = sts.filter(s => s === 'answered').length, part = sts.filter(s => s === 'partial').length;
+function paintSummary() {
+  const items = S.cur.items;
+  const sts = items.map(i => isDone(i.id) ? 'answered' : statusOf(i.id) === 'partial' ? 'partial' : 'none');
+  const done = sts.filter(s => s === 'answered').length;
+  const remain = items.length - done;
   $('progText').textContent = `${done} / ${items.length} 項目`;
-  $('progSub').textContent = part ? `一部 ${part}件・未回答 ${items.length - done - part}件` : `未回答 ${items.length - done}件`;
+  $('progSub').textContent = remain ? `残り ${remain}項目` : 'すべて聞き取り済み';
   $('strip').innerHTML = sts.map(s => `<i class="${s === 'none' ? '' : s}"></i>`).join('');
-  const risks = items.filter(i => S.answers[i.id] && S.answers[i.id].risk);
+
+  const box = $('stateBox');
+  if (!remain) {
+    box.className = 'state done';
+    $('stateTitle').textContent = 'すべての項目を聞き取りました';
+    $('stateSub').textContent = '内容を確認して「この訪問の記録を送信」を押すと、このアンケートは完了です。';
+  } else {
+    const left = Math.max(1, S.cur.visitsTarget - S.cur.visits);
+    box.className = 'state doing';
+    $('stateTitle').textContent = `残り ${remain}項目（今回の目安 ${Math.min(remain, Math.ceil(remain / left))}項目）`;
+    $('stateSub').textContent = `訪問 ${S.cur.visits + 1}回目／目標 ${S.cur.visitsTarget}回で聞き切る`;
+  }
+  const risks = items.filter(i => S.cur.answers[i.id] && S.cur.answers[i.id].risk);
   const rb = $('riskBanner');
-  if (risks.length) { rb.textContent = '休止リスクのサイン：' + risks.map(i => i.name).join('、') + '（送信すると管理者に通知されます）'; rb.classList.remove('hidden'); }
+  if (risks.length) { rb.textContent = '休止リスクのサイン：' + risks.map(i => i.name).join('、'); rb.classList.remove('hidden'); }
   else rb.classList.add('hidden');
   updateControls();
 }
 
-function applyFilter() {
-  const only = $('onlyOpen').checked;
-  document.querySelectorAll('.item').forEach(c => c.classList.toggle('hidden', only && statusOf(c.dataset.id) === 'answered'));
-}
-
-/* ===== AIの結果を反映 ===== */
 function mergeUpdates(updates) {
   let n = 0;
   (updates || []).forEach(u => {
-    const prev = S.answers[u.id] || {};
+    const prev = S.cur.answers[u.id] || {};
     const risk = !!prev.risk || !!u.risk;
     const riskReason = u.riskReason || prev.riskReason || '';
-    if (prev.manual) { S.answers[u.id] = { ...prev, risk, riskReason }; paintCard(u.id, false, true); n++; return; }
-    const status = prev.status === 'answered' && u.status === 'partial' ? 'answered' : u.status;
-    S.answers[u.id] = { status, answer: u.answer, evidence: u.evidence || '', risk, riskReason, manual: false };
-    paintCard(u.id, true, true); n++;
+    if (prev.manual) { S.cur.answers[u.id] = { ...prev, risk, riskReason }; }
+    else {
+      const status = prev.status === 'answered' && u.status === 'partial' ? 'answered' : u.status;
+      S.cur.answers[u.id] = { status, answer: u.answer, evidence: u.evidence || '', risk, riskReason };
+    }
+    markChanged(u.id); n++;
   });
-  saveDraft(); paintProgress(); applyFilter();
+  saveDraft();
+  const focused = document.activeElement && document.activeElement.classList.contains('ans');
+  if (focused) { (updates || []).forEach(u => paintCard(u.id, true, true)); paintSummary(); }
+  else { renderItems(); (updates || []).forEach(u => paintCard(u.id, false, true)); }
   return n;
 }
+
+$('consent').onchange = e => { store.set(consentKey(S.cur.pid), e.target.checked); updateControls(); };
+$('notes').oninput = () => saveDraft();
+
+function leaveSurvey() {
+  if (S.recording) { alert('録音中です。先に「録音を終了」を押してください。'); return; }
+  if (S.busy || S.queue.length) { if (!confirm('読み込みが終わっていない音声があります。破棄して一覧に戻りますか？')) return; S.queue = []; }
+  if (S.cur && S.cur.changed.length && !confirm('まだ送信していません。内容はこの端末に保存され、次に開いたときに復元されます。一覧に戻りますか？')) return;
+  loadHome();
+}
+$('backHome2').onclick = () => leaveSurvey();
 
 /* ===== 録音 ===== */
 $('recBtn').onclick = () => S.recording ? stopRec() : startRec();
@@ -457,7 +591,7 @@ function stopRec() {
   releaseAwake();
   $('nextText').textContent = '録音を終了しました';
   updateControls();
-  if (!S.queue.length && !S.busy) setStatus('録音を終了しました。未回答の項目を確認してください。');
+  if (!S.queue.length && !S.busy) setStatus('録音を終了しました。内容を確認して送信してください。');
 }
 
 function onTick() {
@@ -471,10 +605,8 @@ function onTick() {
     setStatus('録音が一時停止しました。画面をタップすると再開します。', true);
     S.rec.ctx.resume().catch(() => {});
   }
-  updateControls();
 }
 
-// 録音中の音声を区切って読み込み待ちに入れる
 function cutChunk(manual, minSec) {
   const r = S.rec; if (!r) return;
   const sec = r.samples / r.rate;
@@ -487,7 +619,7 @@ function cutChunk(manual, minSec) {
   let off = 0; r.parts.forEach(p => { pcm.set(p, off); off += p.length; });
   r.parts = []; r.samples = 0;
   S.chunkStartedAt = Date.now();
-  S.queue.push({ b64: toBase64(encodeWav(pcm, r.rate)), seconds: Math.round(sec), tries: 0 });
+  S.queue.push({ b64: toBase64(encodeWav(pcm, r.rate)), seconds: Math.round(sec) });
   processQueue();
 }
 
@@ -498,16 +630,15 @@ async function processQueue() {
     const job = S.queue[0];
     setStatus(`読み込み中…（${fmt(job.seconds)}分の会話${S.queue.length > 1 ? '・ほか' + (S.queue.length - 1) + '件待ち' : ''}）`);
     try {
-      const items = currentItems();
-      const current = {}; items.forEach(i => { if (S.answers[i.id]) current[i.id] = { answer: S.answers[i.id].answer }; });
-      const d = await api('analyze', { patientId: S.pid, audio: job.b64, mimeType: 'audio/wav', itemIds: items.map(i => i.id), current });
+      const current = {};
+      S.cur.items.forEach(i => { if (S.cur.answers[i.id]) current[i.id] = { answer: S.cur.answers[i.id].answer }; });
+      const d = await api('analyze', { patientId: S.cur.pid, month: S.cur.month, audio: job.b64, mimeType: 'audio/wav', current });
       S.queue.shift();
       const n = mergeUpdates(d.updates);
       setStatus(`読み込み完了：${n}件の項目を更新しました（${new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}）`);
     } catch (e) {
-      job.tries++;
       S.busy = false; updateControls();
-      setStatus(`読み込みに失敗しました：${e.message}`, true, true);
+      setStatus('読み込みに失敗しました：' + e.message, true, true);
       return;
     }
   }
@@ -544,22 +675,19 @@ function toBase64(bytes) {
 }
 
 /* ===== 画面を消さない ===== */
-async function keepAwake() {
-  try { if ('wakeLock' in navigator) S.wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
-}
+async function keepAwake() { try { if ('wakeLock' in navigator) S.wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {} }
 function releaseAwake() { try { S.wakeLock && S.wakeLock.release(); } catch (e) {} S.wakeLock = null; }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && S.recording) {
-    keepAwake();
-    if (S.rec) S.rec.ctx.resume().catch(() => {});
-  }
+  if (document.visibilityState === 'visible' && S.recording) { keepAwake(); if (S.rec) S.rec.ctx.resume().catch(() => {}); }
 });
 document.addEventListener('touchend', () => { if (S.rec && S.rec.ctx.state !== 'running') S.rec.ctx.resume().catch(() => {}); });
 
-/* ===== ボタン状態・表示 ===== */
+/* ===== ボタン状態 ===== */
 function updateControls() {
+  if (!S.cur) return;
+  const consent = $('consent').checked;
   const rb = $('recBtn');
-  rb.disabled = !S.recording && !S.consent;
+  rb.disabled = !S.recording && !consent;
   rb.classList.toggle('on', S.recording);
   $('recLabel').textContent = S.recording ? '録音を終了' : '録音を開始';
   $('consentRow').classList.toggle('hidden', S.recording);
@@ -569,72 +697,42 @@ function updateControls() {
   const sb = $('submitBtn'), hint = $('submitHint');
   if (S.recording) { sb.disabled = true; hint.textContent = '録音を終了すると送信できます'; }
   else if (S.busy || S.queue.length) { sb.disabled = true; hint.textContent = '読み込みが終わると送信できます'; }
-  else { sb.disabled = false; hint.textContent = ''; }
+  else { sb.disabled = false; hint.textContent = S.cur.changed.length ? '' : '今回はまだ記入がありません（訪問回数だけ記録されます）'; }
 }
 function setStatus(msg, isErr, withRetry) {
   const el = $('status');
   el.className = 'status' + (isErr ? ' err' : '');
   el.textContent = msg;
-  if (withRetry) {
-    const b = document.createElement('button'); b.textContent = '再送';
-    b.onclick = () => processQueue(); el.appendChild(b);
-  }
+  if (withRetry) { const b = document.createElement('button'); b.textContent = '再送'; b.onclick = () => processQueue(); el.appendChild(b); }
 }
-const fmt = s => { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
 /* ===== 送信 ===== */
 $('submitBtn').onclick = async () => {
-  const items = currentItems();
-  const open = items.filter(i => statusOf(i.id) !== 'answered').length;
-  if (open && !confirm(`回答済みでない項目が${open}件あります。このまま送信しますか？`)) return;
+  const c = S.cur;
   const sb = $('submitBtn'); sb.disabled = true; sb.textContent = '送信中…';
   try {
-    const answers = {}; items.forEach(i => { if (S.answers[i.id]) answers[i.id] = S.answers[i.id]; });
-    const d = await api('submit', { patientId: S.pid, month: S.month, therapist: S.settings.name, itemIds: items.map(i => i.id), answers, notes: $('notes').value });
+    const answers = {}; c.changed.forEach(id => { answers[id] = c.answers[id]; });
+    const d = await api('submit', { patientId: c.pid, month: c.month, therapist: S.auth.name, answers, changedIds: c.changed, notes: $('notes').value });
     store.del(draftKey());
-    $('doneText').textContent = `${S.patient.name} さん（${S.month}か月目）の記録を保存しました。` + (d.riskCount ? `休止リスクのサイン${d.riskCount}件を管理者に通知しました。` : '');
+    if (d.complete) {
+      $('doneMark').textContent = '✓';
+      $('doneTitle').textContent = `${c.month}か月目アンケートが完了しました`;
+      $('doneText').textContent = `${c.name} さんの全${d.total}項目を、${d.visits}回の訪問で聞き取りました。` + (d.riskCount ? `休止リスクのサイン${d.riskCount}件を管理者に通知しました。` : '');
+    } else {
+      $('doneMark').textContent = '→';
+      $('doneTitle').textContent = `今回の記録を送信しました（残り ${d.remaining}項目）`;
+      $('doneText').textContent = `${c.name} さんの${c.month}か月目アンケートは ${d.answered}/${d.total}項目まで進みました。次回の訪問で、残りの項目から続けられます。` + (d.riskCount ? `休止リスクのサイン${d.riskCount}件を管理者に通知しました。` : '');
+    }
+    S.cur = null;
     show('viewDone');
   } catch (e) {
     alert('送信できませんでした：' + e.message + '\n入力内容はこの端末に残っています。電波の良い場所で再度送信してください。');
-    sb.textContent = '記録を送信'; updateControls();
-  }
+  } finally { sb.textContent = 'この訪問の記録を送信'; updateControls(); }
 };
+$('doneHome').onclick = () => loadHome();
 
-/* ===== デモ用 ===== */
-const DEMO_ITEMS = [
-  ['effect','効果の実感','1,4','「施術のあと、体が楽な感じってどれくらい続きます？」'],
-  ['life','生活の変化','1,4','「最近、前よりやりやすくなったことってありますか？」'],
-  ['goal','これからの目標','1,4','「これから、できるようになりたいことってありますか？」'],
-  ['schedule','曜日・時間帯','1,4','「今の曜日や時間、ご都合は大丈夫ですか？」'],
-  ['frequency','回数・施術時間','1,4','「回数や時間、ちょうどいい感じですか？」'],
-  ['cost','費用の負担感','1,4','「お支払いのことで、気になっていることはないですか？」'],
-  ['therapist','施術家とのやりとり','1,4','「『もっとこうしてほしい』ってことがあったら、遠慮なく言ってくださいね」'],
-  ['family','ご家族・ケアマネの意向','4','「ご家族は、施術について何かおっしゃってますか？」'],
-  ['continue','継続の意向','4','「これからも続けていけそうですか？気になることがあれば教えてください」']
-].map(r => ({ id: r[0], name: r[1], months: r[2].split(',').map(Number), prompt: r[3] }));
-const DEMO_ANS = {
-  effect: { status: 'answered', answer: '施術後2日ほど腰が軽い。3日目には元に戻る感じ。', evidence: '「2日くらいは楽」と話した' },
-  life: { status: 'answered', answer: 'トイレまで手すりなしで歩ける日が増えた。', evidence: '最近トイレが楽になったと話した' },
-  goal: { status: 'partial', answer: '近所の公園まで歩きたい様子。具体的な目標はまだ。', evidence: '公園の話題で「行けたらね」と話した' },
-  schedule: { status: 'answered', answer: '午前は通院と重なることがあり、午後の方が助かる。', evidence: '火曜午前は病院の日と話した', risk: true, riskReason: '時間帯の変更を希望' },
-  frequency: { status: 'answered', answer: '週2回でちょうど良い。', evidence: '今の回数で十分と話した' },
-  cost: { status: 'partial', answer: '支払いについて少し気にしている様子。', evidence: '年金の話の流れで触れた' },
-  therapist: { status: 'answered', answer: 'もう少し強めでも良い。話しやすいとのこと。', evidence: '強さの希望を伝えた' },
-  family: { status: 'answered', answer: '娘さんは表情が明るくなったと喜んでいる。', evidence: '娘からの話を伝えた' },
-  continue: { status: 'answered', answer: '続けたい気持ちがある。', evidence: '「続けたい」と話した' }
-};
-async function demoApi(action, p) {
-  await new Promise(r => setTimeout(r, action === 'analyze' ? 1500 : 500));
-  if (action === 'init') return { patient: { id: S.pid || 'P0001', name: 'テスト患者A', therapist: S.settings.name, month: 1 }, targetMonths: [1, 4], isTarget: true, items: DEMO_ITEMS };
-  if (action === 'analyze') {
-    const open = p.itemIds.filter(id => statusOf(id) !== 'answered');
-    const pick = open.sort(() => Math.random() - .5).slice(0, 2);
-    return { updates: pick.map(id => ({ id, ...DEMO_ANS[id] })) };
-  }
-  if (action === 'submit') return { saved: true, riskCount: Object.values(p.answers).filter(a => a.risk).length };
-}
-
-boot();
+/* ===== 起動 ===== */
+if (S.auth && S.auth.code && S.auth.name) loadHome(); else openLogin();
 </script>
 </body>
 </html>
